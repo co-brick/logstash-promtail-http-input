@@ -5,14 +5,13 @@ import com.google.protobuf.Timestamp;
 import org.xerial.snappy.Snappy;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PromtailHandler {
 
@@ -106,7 +105,10 @@ public class PromtailHandler {
             os.write(out);
         }
         try(InputStream is = http.getInputStream()) {
-            ret = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            ret = new BufferedReader(
+                    new InputStreamReader(is, StandardCharsets.UTF_8))
+                    .lines()
+                    .collect(Collectors.joining("\n"));
         }
         http.disconnect();
 
