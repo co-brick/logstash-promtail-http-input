@@ -202,6 +202,7 @@ class LogStash::Inputs::Http < LogStash::Inputs::Base
       event.set("tenant", tenant)
     end
     decorate(event)
+    @logger.info("Pushing request to #{remote_address} with headers #{headers} event: #{event}")
     @queue << event
   end
 

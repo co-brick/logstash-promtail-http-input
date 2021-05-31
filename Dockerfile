@@ -6,6 +6,6 @@ RUN ruby -S bundle install
 RUN ruby -S bundle exec rake vendor
 RUN gem build logstash-input-http.gemspec
 
-FROM logstash:7.9.3
+FROM grafana/logstash-output-loki
 COPY --from=build logstash-input-http-3.3.7-java.gem .
 RUN /usr/share/logstash/bin/logstash-plugin install --no-verify --local logstash-input-http-3.3.7-java.gem
