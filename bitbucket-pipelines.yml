@@ -13,15 +13,14 @@ pipelines:
           name: Push Gem file
           image: jruby:9.2.17.0-jdk8
           script:
-            - gem install bundler:1.17.3
+            - gem install bundler
             - ruby -S bundle install
             - ruby -S bundle exec rake vendor
-            - gem build logstash-input-http
             - mkdir -p /root/.gem
             - touch /root/.gem/credentials
             - chmod 0600 /root/.gem/credentials
             - 'printf -- "---\n:rubygems_api_key: $GEM_HOST_API_KEY\n" > /root/.gem/credentials'
-            - gem push logstash-promtail-input-http-3.3.7-java.gem   
+            - rake build release:rubygem_push   
 definitions:
   caches:
     bundler: /usr/local/bundle
