@@ -2,8 +2,8 @@ image: hashicorp/terraform:0.13.5
 options:
   max-time: 60
 pipelines:
-  custom:
-    build-gem-file:
+  branches:
+    master:
       - step: &Run-tests
           name: Test
           image: jruby:9.2.17.0-jdk8

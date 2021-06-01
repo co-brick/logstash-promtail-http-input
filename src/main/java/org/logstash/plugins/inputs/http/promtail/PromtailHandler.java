@@ -1,5 +1,6 @@
 package org.logstash.plugins.inputs.http.promtail;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.protobuf.Timestamp;
 import org.xerial.snappy.Snappy;
@@ -38,6 +39,7 @@ public class PromtailHandler {
 
         List<Map<String, String>> out = new ArrayList<>();
         final ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 
         for (Logproto.StreamAdapter stream : pushRequest.getStreamsList()) {
             Map<String, String> labels = parse(stream.getLabels(), mapper);
@@ -55,6 +57,7 @@ public class PromtailHandler {
 
     private Map<String, String> parse(String json, ObjectMapper mapper) {
         try {
+            json = json.replaceAll("=\"", ":\"");
             return mapper.readValue(json, Map.class);
         } catch (JsonProcessingException e) {
             Map<String, String> event = new HashMap<>();
