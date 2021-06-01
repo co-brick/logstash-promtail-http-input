@@ -1,8 +1,8 @@
-HTTP_INPUT_VERSION = File.read(File.expand_path(File.join(File.dirname(__FILE__), "VERSION"))).strip unless defined?(HTTP_INPUT_VERSION)
+GEM_VERSION = 1.0.0
 
 Gem::Specification.new do |s|
   s.name = 'logstash-promtail-input-http'
-  s.version         = HTTP_INPUT_VERSION
+  s.version         = GEM_VERSION
   s.licenses = ['Apache License (2.0)']
   s.summary = "Receives events over HTTP or HTTPS"
   s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
