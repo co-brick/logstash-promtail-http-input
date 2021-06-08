@@ -30,10 +30,13 @@ Eg. Logstash configuration:
 ```yaml 
 input {
     http {
-        id => "promtail-http-plugin"
+        id => "logstash-promtail-http-input"
         port => "5043"  
         host => "0.0.0.0"
     }
+}
+output {
+  stdout { codec => rubydebug }
 }
 ```
 
@@ -113,15 +116,17 @@ You can use the same **2.1** method to run your plugin in an installed Logstash 
 
 - Build your plugin gem
 ```sh
-gem build logstash-filter-awesome.gemspec
+jruby -S gem build logstash-promtail-http-input.gemspec
+
 ```
 - Install the plugin from the Logstash home
 ```sh
 # Logstash 2.3 and higher
 bin/logstash-plugin install --no-verify
 
-# Prior to Logstash 2.3
-bin/plugin install --no-verify
+# or locally 
+
+bin/logstash-plugin install --no-verify --local  /path_to_gem/logstash-filter-java_drain_filter-0.1.1.gem
 
 ```
 - Start Logstash and proceed to test the plugin
