@@ -11,6 +11,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,6 +21,8 @@ public class PromtailHandler {
 
     // compilation check
     org.xerial.snappy.SnappyNative a = null;
+
+
 
     public String toUTF8String(byte[] bytes) {
         return new String(bytes, StandardCharsets.UTF_8);
@@ -43,25 +48,30 @@ public class PromtailHandler {
 
         for (Logproto.StreamAdapter stream : pushRequest.getStreamsList()) {
             Map<String, String> labels = parse(stream.getLabels(), mapper);
+
             for (Logproto.EntryAdapter entry : stream.getEntriesList()) {
                 Map<String, String> event = new HashMap<>(labels);
                 if (entry.hasTimestamp()) {
-                    event.put("timestamp", entry.getTimestamp().toString());
+                    event.put("@timestamp",
+                            Instant.ofEpochSecond(entry.getTimestamp().getSeconds())
+                                    .atOffset(ZoneOffset.UTC).toZonedDateTime().format(DateTimeFormatter.ISO_INSTANT));
                 }
                 event.put("message", entry.getLine());
                 out.add(event);
             }
+
         }
         return out;
     }
 
-    private Map<String, String> parse(String json, ObjectMapper mapper) {
+    public Map<String, String> parse(String json, ObjectMapper mapper) {
         try {
             json = json.replaceAll("=\"", ":\"");
             return mapper.readValue(json, Map.class);
         } catch (JsonProcessingException e) {
             Map<String, String> event = new HashMap<>();
             event.put("labels_all", json);
+            event.put("error", e.getMessage());
             return event;
         }
     }

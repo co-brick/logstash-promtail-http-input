@@ -170,6 +170,10 @@ class LogStash::Inputs::Http < LogStash::Inputs::Base
       # events = @promtail_input.decode_str(@promtail_input.toUTF8String(body))
       events = @promtail_input.decode(body)
       events.each do |event|
+        ts = event.get("@timestamp")
+        if ts
+          event.put("@timestamp", Time.parse(ts))
+        end
         push_decoded_event(headers, remote_address, LogStash::Event.new(event), false)
       end
     else
