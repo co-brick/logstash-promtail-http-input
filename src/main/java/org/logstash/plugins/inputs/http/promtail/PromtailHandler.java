@@ -12,8 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
+import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,10 +51,9 @@ public class PromtailHandler {
             for (Logproto.EntryAdapter entry : stream.getEntriesList()) {
                 Map<String, String> event = new HashMap<>(labels);
                 if (entry.hasTimestamp()) {
-                    event.put("@timestamp",
-                            Instant.ofEpochSecond(entry.getTimestamp().getSeconds())
-                                    .atOffset(ZoneOffset.UTC).toZonedDateTime().format(DateTimeFormatter.ISO_INSTANT));
+                    event.put("@timestamp", ISO_INSTANT.format(Instant.ofEpochSecond(entry.getTimestamp().getSeconds())));
                 }
+
                 event.put("message", entry.getLine());
                 out.add(event);
             }
