@@ -2,9 +2,9 @@ package org.logstash.plugins.inputs.http.promtail;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.Timestamp;
 import org.xerial.snappy.Snappy;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -12,9 +12,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
 public class PromtailHandler {
 
@@ -64,6 +65,8 @@ public class PromtailHandler {
 
     public Map<String, String> parse(String json, ObjectMapper mapper) {
         try {
+            if (json == null || json.isEmpty())
+                return Collections.EMPTY_MAP;
             json = json.replaceAll("=\"", ":\"");
             return mapper.readValue(json, Map.class);
         } catch (JsonProcessingException e) {

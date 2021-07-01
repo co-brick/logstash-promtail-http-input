@@ -167,12 +167,12 @@ class LogStash::Inputs::Http < LogStash::Inputs::Base
     content_type = headers.fetch("content_type", "")
 
     if (content_type.start_with?("application/x-protobuf"))
-      # events = @promtail_input.decode_str(@promtail_input.toUTF8String(body))
       events = @promtail_input.decode(body)
-      events.each do |event|
-        ts = event.get("@timestamp")
+      events.each do |e|
+        event = {}.merge(e) # needs copy othervise Time is converted automatically to java.util.Date
+        ts = event["@timestamp"]
         if ts
-          event.put("@timestamp", Time.parse(ts))
+          event["@timestamp"] = Time.parse(ts)
         end
         push_decoded_event(headers, remote_address, LogStash::Event.new(event), false)
       end

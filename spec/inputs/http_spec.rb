@@ -172,6 +172,15 @@ describe LogStash::Inputs::Http do
           expect(event.get("message")).to eq(message)
           expect(event.get("tenant")).to eq(tenant)
         end
+        it "should set fake tenant" do
+          promtail_input = org.logstash.plugins.inputs.http.promtail.PromtailHandler.new
+          message = "My compressed and protobuf-ed message"
+          tenant = "fake"
+          promtail_input.sendLogHttp("http://127.0.0.1:#{port}/template/loki", message, tenant)
+          event = logstash_queue.pop
+          expect(event.get("message")).to eq(message)
+          expect(event.get("tenant")).to eq(tenant)
+        end
       end
       context "when receiving a deflate compressed text/plain request" do
         it "should process the request normally" do

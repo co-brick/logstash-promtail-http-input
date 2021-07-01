@@ -1,1 +1,1 @@
-rootProject.name = 'logstash-input-http'
+rootProject.name = 'logstash-promtail-http-input'
